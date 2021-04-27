@@ -36,6 +36,22 @@ def register():
     else:
         return render_template("register.html")
 
+@app.route('/routing')
+def routing():
+        return render_template("routingPage.html")
+
+@app.route('/button')
+def button():
+        return render_template("button.html")
+
+@app.route('/online')
+def online():
+        return render_template("online.html")
+
+@app.route('/dmroom')
+def dmroom():
+        return render_template("dmroom.html")
+
 if __name__ == "__main__":
     app.run()
 
