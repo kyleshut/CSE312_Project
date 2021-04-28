@@ -9,6 +9,7 @@
 <script>
 
     const socket = io.connect("http://127.0.0.1:5000");
+
     function insert_connected(data){
         var tag = document.createElement("p");
         var text = document.createTextNode(data +" is online");
@@ -44,9 +45,24 @@
         socket.on("remove_dis",function (data){
            insert_disconnected(data)
         });
+
+        $('#send_private_message').click(private_button);
+            function private_button() {
+                var recipient = document.getElementById('send_to_username').value
+                var message =document.getElementById('private_message').value
+                socket.emit('private_message', {"username": recipient, "message": message});
+            }
+
+        socket.on("new_private_message",function (msg){
+            alert(msg);
+        });
     });
+
 </script>
 <body>
+Send To: <input type="text" id="send_to_username">
+Message:<input type="text" id="private_message">
+<button id = "send_private_message">Send</button>
 <div id = "online">
 
 </div>

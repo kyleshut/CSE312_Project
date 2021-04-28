@@ -12,7 +12,8 @@ socketio = SocketIO(app)
 counter = 0
 app.secret_key = "secret"
 
-dmUsers={}
+dmUsers = {}
+
 
 @app.route('/')
 def home():
@@ -27,7 +28,7 @@ def sign_in():
         username = request.form['username']
         password = request.form['password']
         account = list(db.find({"username": username}))
-        print(username,password)
+        print(username, password)
         if len(account) == 1:
             acc_password = account[0].get("password")
             if bcrypt.checkpw(password.encode(), acc_password):
@@ -61,14 +62,17 @@ def register():
 def userpage():
     if "user" in session:
         user = session["user"]
-        return render_template('redirectpage.html',name=user)
+        return render_template('redirectpage.html', name=user)
     else:
         return redirect("/sign_in")
 
+
 @app.route("/logout")
 def logout():
-    session.pop("user",None)
+    session.pop("user", None)
     return redirect("/")
+
+
 # dm room
 @app.route("/dmroom")
 def dmroom():
@@ -77,20 +81,22 @@ def dmroom():
     else:
         return redirect("/")
 
+
 @socketio.on('loadOnline')
 def handleConnection():
     user = session["user"]
     id = request.sid
     dmUsers[user] = id
     emit('renderOnline', dmUsers, broadcast=False)
-    emit('join',user,broadcast=True,include_self=False)
+    emit('join', user, broadcast=True, include_self=False)
 
 
 @socketio.on('disconnect')
 def handleDis():
     user = session["user"]
     del dmUsers[user]
-    emit("remove_dis", user, broadcast=True,include_self=False)
+    emit("remove_dis", user, broadcast=True, include_self=False)
+
 
 # end dm room
 
@@ -112,9 +118,16 @@ def handle_button_click():
     print(counter)
     counter += 1
     socketio.emit('receive_counter', counter)
-#end buttonPage
 
 
+# end buttonPage
+
+@socketio.on("private_message")
+def private_message(payload):
+    if payload['username'] in dmUsers:
+        recip = dmUsers[payload['username']]
+        message = payload['message']
+        emit('new_private_message', message, room=recip)
 
 
 if __name__ == "__main__":
