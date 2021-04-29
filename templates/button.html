@@ -27,9 +27,15 @@
 
 </script>
 <body>
+<div style="float: left";id="online_users">
+{% for user in online_users %}
+<div class="user">{{user['username']}}</div>
+{% endfor %}
+</div>
+<div style="margin:auto;width:50%;" id="button">
 <h1>Everyone Click The Button!</h1>
-
 <button type="button" id="btn1">Click Me!</button>
 <p id="counter">0</p>
+</div>
 </body>
 </html>
