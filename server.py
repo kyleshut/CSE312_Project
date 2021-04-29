@@ -1,14 +1,8 @@
 import bcrypt
-<<<<<<< HEAD
 from flask import Flask, session, render_template, request, redirect
-from flask_socketio import SocketIO
-=======
-from flask import Flask, render_template, request, redirect, session
 from flask_socketio import SocketIO, emit
->>>>>>> 582c09578e5eaf9c2f38d42ed870a16ea8f520a1
 from pymongo import MongoClient
 from datetime import datetime
-from bs4 import BeautifulSoup
 
 client = MongoClient("mongodb://localhost:27017/")
 
@@ -30,7 +24,7 @@ def home():
 
 @app.route('/sign_in', methods=['POST', 'GET'])
 def sign_in():
-    if "user" in session:
+    if "username" in session:
         return redirect("/user")
     if request.method == 'POST':
         username = request.form['username']
@@ -41,7 +35,7 @@ def sign_in():
             if bcrypt.checkpw(password.encode(), acc_password):
                 session['username'] = username
                 update_last_active()
-                return redirect('/button')
+                return redirect('/user')
 
         return render_template("sign_in.html", success="Sign in failed, try again.")
     else:
@@ -67,8 +61,8 @@ def register():
 
 @app.route('/user')
 def userpage():
-    if "user" in session:
-        user = session["user"]
+    if "username" in session:
+        user = session["username"]
         return render_template('redirectpage.html', name=user)
     else:
         return redirect("/sign_in")
@@ -76,14 +70,14 @@ def userpage():
 
 @app.route("/logout")
 def logout():
-    session.pop("user", None)
+    session.pop("username", None)
     return redirect("/")
 
 
 # dm room
 @app.route("/dmroom")
 def dmroom():
-    if "user" in session:
+    if "username" in session:
         return render_template("dmroom.html")
     else:
         return redirect("/")
@@ -91,7 +85,7 @@ def dmroom():
 
 @socketio.on('loadOnline')
 def handleConnection():
-    user = session["user"]
+    user = session["username"]
     id = request.sid
     dmUsers[user] = id
     emit('renderOnline', dmUsers, broadcast=False)
@@ -100,7 +94,7 @@ def handleConnection():
 
 @socketio.on('disconnect')
 def handleDis():
-    user = session["user"]
+    user = session["username"]
     del dmUsers[user]
     emit("remove_dis", user, broadcast=True, include_self=False)
 
