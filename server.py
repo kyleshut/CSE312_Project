@@ -2,17 +2,30 @@ import bcrypt
 from flask import Flask, render_template, request, redirect, session
 from flask_socketio import SocketIO, emit
 from pymongo import MongoClient
+import os
+import string
+import random
 
 client = MongoClient("mongodb://localhost:27017/")
 
 db = client['accounts312']["users"]
+dbNotes = client['notes']["note"]
+dbImage = client['image']['image']
 
 app = Flask(__name__)
 socketio = SocketIO(app)
 counter = 0
-app.secret_key = "secret"
+app.secret_key = "supersupersecret"
 
+UPLOAD_FOLDER = 'static/images'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 dmUsers = {}
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 @app.route('/')
@@ -51,18 +64,30 @@ def register():
             salt = bcrypt.gensalt()
             hashed = bcrypt.hashpw(password.encode(), salt)
             db.insert_one({"username": username, "password": hashed})
-            print(username + " has been added")
-            print(username, password)
+            dbNotes.insert_one({"username": username})
+            dbNotes.update_one({"username": username}, {'$push': {'notes': ""}})
             return redirect("/sign_in")
     else:
         return render_template('register.html')
+
+
+@app.route('/notes', methods=['POST', 'GET'])
+def handle_notes():
+    if request.method == 'POST':
+        user = session["user"]
+        userNotes = request.form['notes']
+        dbNotes.update_one({"username": user}, {'$push': {'notes': userNotes}})
+
+    return redirect("/user")
 
 
 @app.route('/user')
 def userpage():
     if "user" in session:
         user = session["user"]
-        return render_template('redirectpage.html', name=user)
+        userdata = dict(dbNotes.find_one({"username": user}))
+        notes = userdata.get("notes")
+        return render_template('redirectpage.html', name=user, len=len(notes), userNotes=notes)
     else:
         return redirect("/sign_in")
 
@@ -130,5 +155,42 @@ def private_message(payload):
         emit('new_private_message', message, room=recip)
 
 
+@app.route('/gallery')
+def gallery():
+    imagename = []
+    userdata = list(dbImage.find({}))
+    if len(userdata) != 0:
+        for i in userdata:
+            imagename.append(i.get("image"))
+        return render_template("gallery.html",image_names=imagename)
+    else:
+        return redirect("/upload")
+
+
+
+@app.route('/upload', methods=['POST', 'GET'])
+def image():
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            return redirect(request.url)
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit an empty part without filename
+        if file.filename == '':
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            extention = file.content_type.split('/')[1]
+            filename = string.ascii_uppercase + string.ascii_lowercase + string.digits
+            filename = ''.join(random.choices(filename, k=150))
+            filename += '.' + extention
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            dbImage.insert_one({"image": filename})
+            return redirect("/gallery")
+
+    return render_template("imageroom.html")
+
+
 if __name__ == "__main__":
     socketio.run(app, debug=True)
+
