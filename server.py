@@ -1,6 +1,11 @@
 import bcrypt
+<<<<<<< HEAD
 from flask import Flask, session, render_template, request, redirect
 from flask_socketio import SocketIO
+=======
+from flask import Flask, render_template, request, redirect, session
+from flask_socketio import SocketIO, emit
+>>>>>>> 582c09578e5eaf9c2f38d42ed870a16ea8f520a1
 from pymongo import MongoClient
 from datetime import datetime
 from bs4 import BeautifulSoup
@@ -13,6 +18,9 @@ app = Flask(__name__)
 app.secret_key = '312 Project'
 socketio = SocketIO(app)
 counter = 0
+app.secret_key = "secret"
+
+dmUsers = {}
 
 
 @app.route('/')
@@ -22,6 +30,8 @@ def home():
 
 @app.route('/sign_in', methods=['POST', 'GET'])
 def sign_in():
+    if "user" in session:
+        return redirect("/user")
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -34,7 +44,6 @@ def sign_in():
                 return redirect('/button')
 
         return render_template("sign_in.html", success="Sign in failed, try again.")
-
     else:
         return render_template("sign_in.html")
 
@@ -54,6 +63,49 @@ def register():
             return redirect("/sign_in")
     else:
         return render_template('register.html')
+
+
+@app.route('/user')
+def userpage():
+    if "user" in session:
+        user = session["user"]
+        return render_template('redirectpage.html', name=user)
+    else:
+        return redirect("/sign_in")
+
+
+@app.route("/logout")
+def logout():
+    session.pop("user", None)
+    return redirect("/")
+
+
+# dm room
+@app.route("/dmroom")
+def dmroom():
+    if "user" in session:
+        return render_template("dmroom.html")
+    else:
+        return redirect("/")
+
+
+@socketio.on('loadOnline')
+def handleConnection():
+    user = session["user"]
+    id = request.sid
+    dmUsers[user] = id
+    emit('renderOnline', dmUsers, broadcast=False)
+    emit('join', user, broadcast=True, include_self=False)
+
+
+@socketio.on('disconnect')
+def handleDis():
+    user = session["user"]
+    del dmUsers[user]
+    emit("remove_dis", user, broadcast=True, include_self=False)
+
+
+# end dm room
 
 
 # Handles everything for button page
@@ -84,12 +136,13 @@ def handle_button_click():
     update_last_active()
     counter += 1
     socketio.emit('receive_counter', counter)
-
+    
 
 # Update the last_active time for a user in the database.
 def update_last_active():
     username = session['username']
     db.update_one({'username': username}, {'$set': {'last_active': datetime.now()}})
+
 
 # Check the last_active time for a user in the database.
 # If the last_active time is more than 20 minutes from
@@ -102,6 +155,15 @@ def is_active(username):
         return False
     else:
         return True
+
+
+@socketio.on("private_message")
+def private_message(payload):
+    if payload['username'] in dmUsers:
+        recip = dmUsers[payload['username']]
+        message = payload['message']
+        emit('new_private_message', message, room=recip)
+
 
 if __name__ == "__main__":
     socketio.run(app, debug=True)
