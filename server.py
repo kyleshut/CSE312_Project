@@ -25,6 +25,7 @@ def home():
 @app.route('/sign_in', methods=['POST', 'GET'])
 def sign_in():
     if "username" in session:
+        update_last_active()
         return redirect("/user")
     if request.method == 'POST':
         username = request.form['username']
@@ -63,6 +64,7 @@ def register():
 def userpage():
     if "username" in session:
         user = session["username"]
+        update_last_active()
         return render_template('redirectpage.html', name=user)
     else:
         return redirect("/sign_in")
@@ -78,6 +80,7 @@ def logout():
 @app.route("/dmroom")
 def dmroom():
     if "username" in session:
+        update_last_active()
         return render_template("dmroom.html")
     else:
         return redirect("/")
