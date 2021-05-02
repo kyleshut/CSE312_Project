@@ -6,12 +6,13 @@ import os
 import string
 import random
 
+# pip3 eventlet
 client = MongoClient("mongodb://localhost:27017/")
 
 db = client['accounts312']["users"]
 dbNotes = client['notes']["note"]
 dbImage = client['image']['image']
-
+online = []
 app = Flask(__name__)
 socketio = SocketIO(app)
 counter = 0
@@ -41,11 +42,12 @@ def sign_in():
         username = request.form['username']
         password = request.form['password']
         account = list(db.find({"username": username}))
-        print(username, password)
         if len(account) == 1:
             acc_password = account[0].get("password")
             if bcrypt.checkpw(password.encode(), acc_password):
                 session["user"] = username
+                temp = username.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;")
+                online.append(temp)
                 return redirect("/user")
         return render_template("sign_in.html", success="Sign in failed, try again")
     else:
@@ -87,15 +89,22 @@ def userpage():
         user = session["user"]
         userdata = dict(dbNotes.find_one({"username": user}))
         notes = userdata.get("notes")
-        return render_template('redirectpage.html', name=user, len=len(notes), userNotes=notes)
+        return render_template('redirectpage.html', name=user, len=len(notes), userNotes=notes, usonline=online,
+                               uslen=len(online))
     else:
         return redirect("/sign_in")
 
 
 @app.route("/logout")
 def logout():
-    session.pop("user", None)
-    return redirect("/")
+    try:
+        user = session["user"]
+        user = user.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;")
+        session.pop("user", None)
+        online.remove(user)
+        return redirect("/")
+    except:
+        return redirect("/")
 
 
 # dm room
@@ -110,6 +119,7 @@ def dmroom():
 @socketio.on('loadOnline')
 def handleConnection():
     user = session["user"]
+    temp = user.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;")
     id = request.sid
     dmUsers[user] = id
     emit('renderOnline', dmUsers, broadcast=False)
@@ -140,7 +150,6 @@ def handle_load_count():
 @socketio.on('button_click')
 def handle_button_click():
     global counter
-    print(counter)
     counter += 1
     socketio.emit('receive_counter', counter)
 
@@ -149,9 +158,13 @@ def handle_button_click():
 
 @socketio.on("private_message")
 def private_message(payload):
-    if payload['username'] in dmUsers:
-        recip = dmUsers[payload['username']]
-        message = payload['message']
+    p =payload['username'].replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;")
+
+    if p in dmUsers:
+        recip = dmUsers[p]
+        message = session["user"] + " sent you a message\n\n"
+        message += payload['message'].replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;")
+        message += " \n\n To reply type their name and a message in the box below"
         emit('new_private_message', message, room=recip)
 
 
@@ -162,10 +175,9 @@ def gallery():
     if len(userdata) != 0:
         for i in userdata:
             imagename.append(i.get("image"))
-        return render_template("gallery.html",image_names=imagename)
+        return render_template("gallery.html", image_names=imagename)
     else:
         return redirect("/upload")
-
 
 
 @app.route('/upload', methods=['POST', 'GET'])
@@ -191,6 +203,16 @@ def image():
     return render_template("imageroom.html")
 
 
+@app.route("/clear", methods=['GET', 'POST'])
+def clear():
+    if "user" in session:
+        user = session["user"]
+        userdata = list(dbNotes.find({"username": user}))[0]
+        notes = userdata.get('notes')
+        set = {"username": user, "notes": []}
+        dbNotes.update_one({"username": user, "notes": notes}, {'$set': set})
+    return redirect('/user')
+
+
 if __name__ == "__main__":
     socketio.run(app, debug=True)
-

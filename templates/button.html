@@ -6,26 +6,7 @@
 </head>
 <script src=https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script>
-
-    const socket = io.connect("http://127.0.0.1:5000");
-
-    $(document).ready(function (){
-        socket.on('connect',function (){
-        socket.emit('load_counter');
-        });
-
-        socket.on('receive_counter', function (data){
-             document.getElementById('counter').innerHTML = data;
-        });
-
-        $("#btn1").click(sendMessage);
-        function sendMessage() {
-             socket.emit('button_click');
-        }
-    });
-
-</script>
+<script src="../static/js/button.js"></script>
 <body>
 <h1>Everyone Click The Button!</h1>
 

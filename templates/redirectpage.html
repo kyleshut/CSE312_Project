@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="../static/routing_page/styles/routingPageStyles.css">
 </head>
 
-<body style="background-color:powderblue;">>
+<body>
 <h1>Hello {{name}}</h1>
 <form action="/notes" method="post">
   <label for="notes">Enter Personal Notes</label><br>
@@ -21,7 +21,16 @@
     <li>{{userNotes[i]}}</li>
     {%endfor%}
 </form>
+<form action="/clear" method="post">
+  <label for="notes">Clear Notes</label><br>
+    <input type="submit">
+</form>
+<br>
+<p>User online</p>
+    {%for i in range(0, uslen)%}
 
+    <li>{{usonline[i]}}</li>
+    {%endfor%}
 <div class = "wrapper">
     <div class = "buttonHolder">
         <a class = "button" href = "/button">Interaction Room</a>
@@ -32,6 +41,7 @@
     </div>
 
 </div>
+
 </body>
 
 </html>
