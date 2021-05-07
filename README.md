@@ -28,6 +28,7 @@ From the navigation page, click the Interaction room button to go to a cookie cl
 
 ## Technology
 - [Python 3.8](https://www.python.org/)
+- [JavaScript](https://www.javascript.com/)
 - [Flask](https://flask.palletsprojects.com/en/1.1.x/) - a [WSGI](https://wsgi.readthedocs.io/en/latest/) web application framework
 - [MongoDB](https://www.mongodb.com/) - a document-based distributed database platform
 - [PyMongo](https://pymongo.readthedocs.io/en/stable/) - a Python library distribution for working with MongoDB
