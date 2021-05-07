@@ -8,9 +8,6 @@ Users should be able to utilize the following features:
 - Share multimedia content (images) in the gallery
 - Interact in real time via cookie clicker
 
-## Demo
-[Live Site](http://cse312-05.dcsl.buffalo.edu)
-
 ### Login/Registration
 Navigate to the [site](http://cse312-05.dcsl.buffalo.edu) to login/register. After successfully registering and logging in, your information will be saved for the length of your session, allowing you to refresh/close the browser and login with one click rather than inputting your credentials again. Once logged in, you will see the navigation page and any personal notes you've left for yourself.
 
@@ -25,6 +22,9 @@ To share multimedia content (images), select the upload button from the navigati
 
 ### Real Time Interactions
 From the navigation page, click the Interaction room button to go to a cookie clicker. Press the buttonas much or as little as you like and the value will update for you and all users on the webpage.
+
+## Demo
+[Live Site](http://cse312-05.dcsl.buffalo.edu)
 
 ## Technology
 - [Python 3.8](https://www.python.org/)
