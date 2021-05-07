@@ -7,7 +7,7 @@ import string
 import random
 
 # pip3 eventlet
-client = MongoClient("mongodb://localhost:27017/")
+client = MongoClient("mongodb://mongo:27017/")
 
 db = client['accounts312']["users"]
 dbNotes = client['notes']["note"]
