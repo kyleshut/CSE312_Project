@@ -115,21 +115,21 @@ def dmroom():
         return redirect("/")
 
 
-@socketio.on('loadOnline')
-def handleConnection():
-    user = session["user"]
-    temp = user.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;")
-    id = request.sid
-    dmUsers[user] = id
-    emit('renderOnline', dmUsers, broadcast=False)
-    emit('join', user, broadcast=True, include_self=False)
+# @socketio.on('loadOnline')
+# def handleConnection():
+#     user = session["user"]
+#     temp = user.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;")
+#     id = request.sid
+#     dmUsers[user] = id
+#     emit('renderOnline', dmUsers, broadcast=False)
+#     emit('join', user, broadcast=True, include_self=False)
 
 
-@socketio.on('disconnect')
-def handleDis():
-    user = session["user"]
-    del dmUsers[user]
-    emit("remove_dis", user, broadcast=True, include_self=False)
+# @socketio.on('disconnect')
+# def handleDis():
+#     user = session["user"]
+#     del dmUsers[user]
+#     emit("remove_dis", user, broadcast=True, include_self=False)
 
 
 # end dm room
@@ -153,18 +153,18 @@ def handle_button_click():
     socketio.emit('receive_counter', counter)
 
 
-# end buttonPage
+# # end buttonPage
 
-@socketio.on("private_message")
-def private_message(payload):
-    p =payload['username'].replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;")
+# @socketio.on("private_message")
+# def private_message(payload):
+#     p =payload['username'].replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;")
 
-    if p in dmUsers:
-        recip = dmUsers[p]
-        message = session["user"] + " sent you a message\n\n"
-        message += payload['message'].replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;")
-        message += " \n\n To reply type their name and a message in the box below"
-        emit('new_private_message', message, room=recip)
+#     if p in dmUsers:
+#         recip = dmUsers[p]
+#         message = session["user"] + " sent you a message\n\n"
+#         message += payload['message'].replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;")
+#         message += " \n\n To reply type their name and a message in the box below"
+#         emit('new_private_message', message, room=recip)
 
 
 @app.route('/gallery')
@@ -214,5 +214,5 @@ def clear():
 
 
 if __name__ == "__main__":
-    socketio.run(app, use_debugger=False, use_reloader=False, debug=False, host='0.0.0.0', port=8000)
-    # socketio.run(app=app, host='http://cse312-05.dcsl.buffalo.edu', port=8000)
+    socketio.run(app, host='0.0.0.0', port=8000)
+    # app.run(host='0.0.0.0', port=8000)
