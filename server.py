@@ -23,7 +23,6 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 dmUsers = {}
 
-
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -216,3 +215,4 @@ def clear():
 
 if __name__ == "__main__":
     socketio.run(app, debug=True)
+    # socketio.run(app=app, host='http://cse312-05.dcsl.buffalo.edu', port=8000)

@@ -1,5 +1,5 @@
 
-    const socket = io.connect("http://cse312-05.dcsl.buffalo.edu");
+    const socket = io.connect();
 
     function insert_connected(data){
         var tag = document.createElement("p");
