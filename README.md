@@ -28,9 +28,10 @@ From the navigation page, click the Interaction room button to go to a cookie cl
 
 ## Technology
 - [Python 3.8](https://www.python.org/)
-- [Flask](https://flask.palletsprojects.com/en/1.1.x/)
-- [bcrypt](https://pypi.org/project/bcrypt/)
-- [MongoDB](https://www.mongodb.com/)
+- [Flask](https://flask.palletsprojects.com/en/1.1.x/) - a [WSGI](https://wsgi.readthedocs.io/en/latest/) web application framework
+- [MongoDB](https://www.mongodb.com/) - a document-based distributed database platform
+- [PyMongo](https://pymongo.readthedocs.io/en/stable/) - a Python library distribution for working with MongoDB
+- [bcrypt](https://pypi.org/project/bcrypt/) - a library for hashing information
 
 ## Team
 [Anthony Morales](https://github.com/AnthonyLMorales) | [Andrew Qu](https://github.com/Qu-Andrew) | [Kyle Shuttleworth](https://github.com/kyleshut) | [Hollis Pauquette](https://github.com/pauquette)
