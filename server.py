@@ -7,7 +7,7 @@ import string
 import random
 
 # pip3 eventlet
-client = MongoClient("mongodb://localhost:27017/")
+client = MongoClient("mongodb://mongo:27017/")
 
 db = client['accounts312']["users"]
 dbNotes = client['notes']["note"]
@@ -22,7 +22,6 @@ UPLOAD_FOLDER = 'static/images'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 dmUsers = {}
-
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -108,29 +107,29 @@ def logout():
 
 
 # dm room
-@app.route("/dmroom")
-def dmroom():
-    if "user" in session:
-        return render_template("dmroom.html")
-    else:
-        return redirect("/")
+# @app.route("/dmroom")
+# def dmroom():
+#     if "user" in session:
+#         return render_template("dmroom.html")
+#     else:
+#         return redirect("/")
 
 
-@socketio.on('loadOnline')
-def handleConnection():
-    user = session["user"]
-    temp = user.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;")
-    id = request.sid
-    dmUsers[user] = id
-    emit('renderOnline', dmUsers, broadcast=False)
-    emit('join', user, broadcast=True, include_self=False)
+# @socketio.on('loadOnline')
+# def handleConnection():
+#     user = session["user"]
+#     temp = user.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;")
+#     id = request.sid
+#     dmUsers[user] = id
+#     emit('renderOnline', dmUsers, broadcast=False)
+#     emit('join', user, broadcast=True, include_self=False)
 
 
-@socketio.on('disconnect')
-def handleDis():
-    user = session["user"]
-    del dmUsers[user]
-    emit("remove_dis", user, broadcast=True, include_self=False)
+# @socketio.on('disconnect')
+# def handleDis():
+#     user = session["user"]
+#     del dmUsers[user]
+#     emit("remove_dis", user, broadcast=True, include_self=False)
 
 
 # end dm room
@@ -154,18 +153,18 @@ def handle_button_click():
     socketio.emit('receive_counter', counter)
 
 
-# end buttonPage
+# # end buttonPage
 
-@socketio.on("private_message")
-def private_message(payload):
-    p =payload['username'].replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;")
+# @socketio.on("private_message")
+# def private_message(payload):
+#     p =payload['username'].replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;")
 
-    if p in dmUsers:
-        recip = dmUsers[p]
-        message = session["user"] + " sent you a message\n\n"
-        message += payload['message'].replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;")
-        message += " \n\n To reply type their name and a message in the box below"
-        emit('new_private_message', message, room=recip)
+#     if p in dmUsers:
+#         recip = dmUsers[p]
+#         message = session["user"] + " sent you a message\n\n"
+#         message += payload['message'].replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;")
+#         message += " \n\n To reply type their name and a message in the box below"
+#         emit('new_private_message', message, room=recip)
 
 
 @app.route('/gallery')
@@ -215,4 +214,5 @@ def clear():
 
 
 if __name__ == "__main__":
-    socketio.run(app, debug=True)
+    socketio.run(app, host='0.0.0.0', port=8000)
+    # app.run(host='0.0.0.0', port=8000)

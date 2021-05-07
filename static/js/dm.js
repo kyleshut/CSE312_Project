@@ -1,5 +1,5 @@
 
-    const socket = io.connect("http://127.0.0.1:5000");
+    const socket = io.connect();
 
     function insert_connected(data){
         var tag = document.createElement("p");
