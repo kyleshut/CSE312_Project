@@ -1,5 +1,5 @@
 bcrypt
 pymongo
-flask
+Flask
 flask_socketio
 eventlet

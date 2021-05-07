@@ -1,4 +1,4 @@
-FROM python:3.8.2
+FROM python:3.8
 
 # Set the home directory to /root
 ENV HOME /root

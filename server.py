@@ -214,5 +214,5 @@ def clear():
 
 
 if __name__ == "__main__":
-    socketio.run(app)
+    socketio.run(app, use_debugger=False, use_reloader=False, debug=False, host='0.0.0.0', port=8000)
     # socketio.run(app=app, host='http://cse312-05.dcsl.buffalo.edu', port=8000)
