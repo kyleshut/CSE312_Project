@@ -1,2 +1,4 @@
 bcrypt
 pymongo
+flask
+flask_socketio

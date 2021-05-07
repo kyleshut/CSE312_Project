@@ -9,7 +9,7 @@ WORKDIR /root
 # Copy all app files into the image
 COPY . .
 
-# Download dependancies
+# Download dependencies
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
