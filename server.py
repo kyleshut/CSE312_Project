@@ -107,12 +107,12 @@ def logout():
 
 
 # dm room
-@app.route("/dmroom")
-def dmroom():
-    if "user" in session:
-        return render_template("dmroom.html")
-    else:
-        return redirect("/")
+# @app.route("/dmroom")
+# def dmroom():
+#     if "user" in session:
+#         return render_template("dmroom.html")
+#     else:
+#         return redirect("/")
 
 
 # @socketio.on('loadOnline')
