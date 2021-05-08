@@ -33,6 +33,7 @@ From the navigation page, click the Interaction room button to go to a cookie cl
 - [MongoDB](https://www.mongodb.com/) - a document-based distributed database platform
 - [PyMongo](https://pymongo.readthedocs.io/en/stable/) - a Python library distribution for working with MongoDB
 - [bcrypt](https://pypi.org/project/bcrypt/) - a library for hashing information
+- [Flask-Socket.io](https://github.com/miguelgrinberg/Flask-SocketIO) - library that utilizes web sockets to enable real-time, bidirectional and event-based  communication
 
 ## Team
 [Anthony Morales](https://github.com/AnthonyLMorales) | [Andrew Qu](https://github.com/Qu-Andrew) | [Kyle Shuttleworth](https://github.com/kyleshut) | [Hollis Pauquette](https://github.com/pauquette)
